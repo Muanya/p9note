@@ -1,13 +1,19 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:p9note/models/db_provider.dart';
+import 'package:p9note/models/utils.dart';
 import '../models/note.dart';
 import '../views/more_options_sheet.dart';
 
 class MakeNote extends StatefulWidget {
   final Note noteInEditing;
+  final int categoryID;
 
-  const MakeNote({required this.noteInEditing, Key? key}) : super(key: key);
+  const MakeNote({
+    required this.noteInEditing,
+    required this.categoryID,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _MakeNoteState createState() => _MakeNoteState();
@@ -22,6 +28,7 @@ class _MakeNoteState extends State<MakeNote> {
   final _bodyFocus = FocusNode();
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
+  late int _categoryID;
 
   late Timer _persistenceTimer;
 
@@ -42,6 +49,7 @@ class _MakeNoteState extends State<MakeNote> {
     _initialTitle = _editableNote.title;
     _initialBody = _editableNote.body;
     _noteColor = _editableNote.noteColor;
+    _categoryID = widget.categoryID;
 
     if (_editableNote.id == -1) _isNewNote = true;
 
@@ -108,24 +116,24 @@ class _MakeNoteState extends State<MakeNote> {
                 ),
                 Flexible(
                     child: Container(
-                      padding: const EdgeInsets.all(0.0),
-                      child: CustomPaint(
-                        foregroundPainter: NotePainter(),
-                        child: TextField(
-                          keyboardType: TextInputType.multiline,
-                          maxLines: null,
-                          expands: true,
-                          controller: _bodyController,
-                          focusNode: _bodyFocus,
-                          cursorColor: Colors.black,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            height: 2.0,
-                          ),
-                        ),
+                  padding: const EdgeInsets.all(0.0),
+                  child: CustomPaint(
+                    foregroundPainter: NotePainter(),
+                    child: TextField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      expands: true,
+                      controller: _bodyController,
+                      focusNode: _bodyFocus,
+                      cursorColor: Colors.black,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        height: 2.0,
                       ),
-                    ))
+                    ),
+                  ),
+                ))
               ],
             ),
           ),
@@ -136,21 +144,31 @@ class _MakeNoteState extends State<MakeNote> {
 
   // for storing and updating the note
   void _persistData() {
-    // update the Note object 
+    // update the Note object
     _updateNoteObject();
 
     if (_editableNote.body.isNotEmpty || _editableNote.title.isNotEmpty) {
       var noteDB = DatabaseProvider.db;
       if (_isNewNote) {
-        var note = noteDB.insert(_editableNote); // create a new note
+        var note = noteDB.insertNote(_editableNote); // create a new note
         // update the id of the newly inserted note
         note.then((value) {
           _editableNote.id = value.id;
           _isNewNote = false;
+
+          // if the note belongs to a category
+          // insert the joint relationship
+          if (_categoryID != -1) {
+            var rel = Joint(
+              categoryID: _categoryID,
+              noteID: _editableNote.id,
+            );
+            noteDB.insertJointRel(rel);
+          }
         });
       } else {
         // for already existing note
-        noteDB.update(_editableNote);
+        noteDB.updateNote(_editableNote);
       }
     }
   }
@@ -171,7 +189,6 @@ class _MakeNoteState extends State<MakeNote> {
       if (_editableNote.dateLastEdited != _initialDateEdited) {
         _editableNote.dateLastEdited = DateTime.now();
       }
-
     }
   }
 
@@ -190,6 +207,7 @@ class _MakeNoteState extends State<MakeNote> {
           color: _noteColor,
           colorChangedCallBack: _onColorChangedCallBack,
           noteOptionsCallBack: _noteOptionsHandler,
+          categoryId: -1,
         );
       },
     );
@@ -218,14 +236,8 @@ class _MakeNoteState extends State<MakeNote> {
     });
   }
 
-  void _noteOptionsHandler(NoteOptions opt) {
-    if (opt == NoteOptions.share) {
-      print("Share");
-    } else if (opt == NoteOptions.delete) {
-      print('delete');
-    } else {
-      print('archive');
-    }
+  void _noteOptionsHandler(BuildContext context, NoteOptions opt) {
+    Utils.noteOptionsHandler(context, opt, _editableNote, true);
   }
 }
 

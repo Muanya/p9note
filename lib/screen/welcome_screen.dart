@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../main.dart';
-import 'home_screen.dart';
+import 'all_categories_screen.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({Key? key, required this.title}) : super(key: key);
@@ -33,7 +33,9 @@ class WelcomePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => HomePage(title: title)),
+                        builder: (context) => const AllCategories(
+                          title: "Note Categories",
+                        )),
                   );
                 },
                 child: const Text('Go to notes'),

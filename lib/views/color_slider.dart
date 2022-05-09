@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ColorSlider extends StatefulWidget {
   final void Function(Color) callBackColorTapped;
-  final Color noteColor;
+  final Color noteColor; // redefine this !!!
 
   const ColorSlider(
       {required this.callBackColorTapped, required this.noteColor, Key? key})
@@ -13,6 +13,7 @@ class ColorSlider extends StatefulWidget {
 }
 
 class _ColorSliderState extends State<ColorSlider> {
+  int _selectedIndex = 0;
   final colors = const [
     Color(0xffffffff), // classic white
     Color(0xfff28b81), // light pink
@@ -31,7 +32,7 @@ class _ColorSliderState extends State<ColorSlider> {
   final Color _borderColor = const Color(0xffd3d3d3);
   final Color _foregroundColor = const Color(0xff595959);
 
-  final _check = const Icon(Icons.check);
+  final _checkWidget = const Icon(Icons.check);
 
   @override
   Widget build(BuildContext context) {
@@ -48,15 +49,49 @@ class _ColorSliderState extends State<ColorSlider> {
                 shape: BoxShape.circle,
               ),
               child: CircleAvatar(
-                foregroundColor: _foregroundColor,
                 backgroundColor: colors[index],
-              ),
+                child: InkWell(
+                  splashColor: _foregroundColor,
+                  child: Material(
+                    color: colors[index],
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if(index == _selectedIndex) _checkWidget,
+
+                      ],
+                    ),
+                  ),
+                ),
+              )
             ),
           );
         }));
+
+
+    // return ListView(
+    //     scrollDirection: Axis.horizontal,
+    //     children: List.generate(colors.length, (index) {
+    //       return GestureDetector(
+    //         onTap: () => _colorTapped(index),
+    //         child: Container(
+    //           width: 58.0,
+    //           height: 58.0,
+    //           decoration: BoxDecoration(
+    //             color: _borderColor,
+    //             shape: BoxShape.circle,
+    //           ),
+    //           child: CircleAvatar(
+    //             foregroundColor: _foregroundColor,
+    //             backgroundColor: colors[index],
+    //           ),
+    //         ),
+    //       );
+    //     }));
   }
 
   void _colorTapped(int index) {
+    _selectedIndex = index;
     var selectedColor = colors[index];
     widget.callBackColorTapped(selectedColor);
   }
