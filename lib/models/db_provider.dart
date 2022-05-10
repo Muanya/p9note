@@ -102,6 +102,10 @@ class DatabaseProvider {
   Future<List<Note>> getNotesbyID(List<int> idList) async {
     final db = await database;
 
+    idList = [
+      ...{...idList}
+    ]; // remove duplicate note id
+
     List<Note> noteList = [];
 
     for (var id in idList) {
@@ -117,6 +121,7 @@ class DatabaseProvider {
           orderBy: '$COLUMN_ID desc',
           where: '$COLUMN_ID = ?',
           whereArgs: [id]);
+
 
       Note n = Note.fromMap(note[0]);
       noteList.add(n);
@@ -280,4 +285,6 @@ class DatabaseProvider {
       whereArgs: [id],
     );
   }
+
+
 }

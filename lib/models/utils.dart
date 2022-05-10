@@ -30,7 +30,7 @@ class Utils {
       showDialog(
           context: context,
           builder: (BuildContext context) {
-            return const AddCategorySheet();
+            return AddCategorySheet(noteId: nt.id,);
           });
     } else {
       print('archive');
