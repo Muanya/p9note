@@ -271,7 +271,6 @@ class DatabaseProvider {
     return rel;
   }
 
-  /// TODO: Implement delete of a category and delete of a note
 
   Future<int> deleteJoint(int id, bool forNote) async {
     /// forNote is set to true if @id is the id of Note object

@@ -7,6 +7,7 @@ import 'db_provider.dart';
 
 class Utils {
   static const DEFAULT_CATEGORY = 'ALL NOTES';
+  static bool NOTE_MARKED = false; // TODO: find alternative for this method
 
   static void noteOptionsHandler(
       BuildContext context, NoteOptions opt, Note nt, bool isEditing) {
