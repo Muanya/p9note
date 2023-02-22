@@ -22,8 +22,8 @@ class WelcomePage extends StatelessWidget {
               margin: const EdgeInsets.symmetric(vertical: 70.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: NoteApp.baseColors['default']!['background'],
-                  onPrimary: NoteApp.baseColors['default']!['black'],
+                  foregroundColor: NoteApp.baseColors['default']!['black'],
+                  backgroundColor: NoteApp.baseColors['default']!['background'],
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(16.0)),
@@ -34,8 +34,8 @@ class WelcomePage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const AllCategories(
-                          title: "Note Categories",
-                        )),
+                              title: "Note Categories",
+                            )),
                   );
                 },
                 child: const Text('Go to notes'),
